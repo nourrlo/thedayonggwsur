@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Simulation</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #2c2f33; /* Dark background */
+        color: white;
+      }
+
+      .container {
+        display: flex;
+        height: 100vh;
+      }
+
+      .sidebar {
+        width: 250px;
+        background-color: #23272a; /* Sidebar background */
+        padding: 20px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+      }
+
+      .sidebar h2,
+      .sidebar h3 {
+        margin: 0;
+        padding: 10px 0;
+        display: flex;
+        align-items: center;
+      }
+
+      .sidebar h2 img {
+        width: 30px; /* Logo size */
+        height: 30px;
+        margin-right: 10px;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      .user {
+        padding: 10px;
+        cursor: pointer;
+        transition: background 0.3s;
+        display: flex;
+        align-items: center;
+      }
+
+      .user:hover {
+        background-color: #3a3f44; /* Hover effect */
+      }
+
+      .user img {
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        margin-right: 10px;
+      }
+
+      .premium {
+        margin-top: 20px;
+        background-color: #7289da; /* Premium section background */
+        padding: 15px;
+        text-align: center;
+        border-radius: 5px;
+      }
+
+      .premium button {
+        background-color: #99aab5; /* Button background */
+        border: none;
+        color: black;
+        padding: 10px 15px;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      .premium button:hover {
+        background-color: #7289da; /* Button hover effect */
+      }
+
+      .main-content {
+        flex-grow: 1;
+        padding: 20px;
+        background-color: #2c2f33; /* Main content background */
+        display: flex;
+        flex-direction: column;
+      }
+
+      .chat-box {
+        flex-grow: 1;
+        background-color: #40444b; /* Chat background */
+        border-radius: 5px;
+        padding: 15px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+      }
+
+      .message {
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+      }
+
+      .message img {
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+      }
+
+      .message .text {
+        background-color: #5865f2; /* Message background */
+        border-radius: 8px;
+        padding: 10px;
+        color: white;
+        max-width: 60%;
+      }
+
+      .message .text.right {
+        background-color: #3ba55d; /* Different color for the other user */
+        align-self: flex-end;
+      }
+
+      .typing-indicator {
+        font-style: italic;
+        color: #99aab5;
+        margin-left: 10px;
+      }
+
+      .input-area {
+        display: flex;
+        align-items: center;
+      }
+
+      .input-area input {
+        flex-grow: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        margin-right: 10px;
+      }
+
+      .input-area button {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        background-color: #7289da;
+        color: white;
+        cursor: pointer;
+      }
+
+      .input-area button:hover {
+        background-color: #5b6e9e; /* Button hover effect */
+      }
+
+      .end-message {
+        margin-top: 20px;
+        text-align: center;
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="sidebar">
+        <h2>
+          <img
+            src="https://s3.amazonaws.com/shecodesio-production/uploads/files/000/152/997/original/Screenshot_2024-12-17_at_00.28.02.png?1734396353"
+            alt="Logo"
+          />Chat
+        </h2>
+        <h3>
+          <img
+            src="https://s3.amazonaws.com/shecodesio-production/uploads/files/000/152/996/original/Screenshot_2024-12-17_at_00.28.08.png?1734396311"
+            alt="Chat Icon"
+          />Direct Messages
+        </h3>
+        <ul>
+          <li class="user">
+            <img
+              src="https://s3.amazonaws.com/shecodesio-production/uploads/files/000/152/998/original/Screenshot_2024-12-17_at_00.28.21.png?1734396392"
+              alt="PFP"
+            />Tortured Drugstore
+          </li>
+          <li class="user">
+            <img
+              src="https://i.pinimg.com/736x/30/db/72/30db7259d870f7f8093c968bb401ec6b.jpg"
+              alt="PFP"
+            />Loyil
+          </li>
+        </ul>
+        <div class="premium">
+          <p>
+            <img
+              src="https://s3.amazonaws.com/shecodesio-production/uploads/files/000/152/995/original/Screenshot_2024-12-17_at_00.29.24.png?1734396243"
+              alt="Premium Icon"
+            />Unlock chat filters, Send and receive images and videos and more!
+          </p>
+          <button>Get Premium</button>
+        </div>
+      </div>
+      <div class="main-content">
+        <h2>New Chat</h2>
+        <div class="chat-box" id="chat-box">
+          <!-- Messages will be dynamically added here -->
+        </div>
+        <div class="input-area">
+          <input
+            type="text"
+            placeholder="Type a message..."
+            id="message-input"
+          />
+          <button id="send-button">Send</button>
+          <button id="skip-button">Skip Typing</button>
+          <!-- Skip button -->
+        </div>
+        <div class="end-message hidden" id="end-message">
+          <button id="repeat-button">Repeat</button>
+          <button id="move-on-button">Move On</button>
+        </div>
+        <div class="accuracy-prompt hidden" id="accuracy-prompt">
+          <p>SO WAS THAT ACCURATE?</p>
+          <button id="yes-button">YES</button>
+          <button id="no-button">NO</button>
+        </div>
+        <div class="final-message hidden" id="final-message">
+          <p id="final-text"></p>
+          <button id="next-button" class="hidden">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const messages = [
+        { user: "Tortured Drugstore", text: "Hi" },
+        { user: "Loyil", text: "Hey" },
+        { user: "Tortured Drugstore", text: "M or f" },
+        { user: "Loyil", text: "M, you?" },
+        { user: "Tortured Drugstore", text: "F" },
+        { user: "Loyil", text: "Cool" },
+        { user: "Tortured Drugstore", text: "Cool, where r u from?" },
+        { user: "Loyil", text: "Iraq" },
+        { user: "Tortured Drugstore", text: "لوطي" },
+        { user: "Loyil", text: "How do you know that word? 😭" },
+        { user: "Tortured Drugstore", text: "Ha ha, we use it in Sudan" },
+        { user: "Loyil", text: "Freaky 👅👅👅" },
+        { user: "Tortured Drugstore", text: "Ur not freaky.." },
+        { user: "Loyil", text: "Whats ur insta?" },
+        { user: "Tortured Drugstore", text: "Nycstreetrat" },
+      ];
+
+      const chatBox = document.getElementById("chat-box");
+      const messageInput = document.getElementById("message-input");
+      const sendButton = document.getElementById("send-button");
+      const endMessage = document.getElementById("end-message");
+      const accuracyPrompt = document.getElementById("accuracy-prompt");
+      const finalMessage = document.getElementById("final-message");
+      const finalText = document.getElementById("final-text");
+      const nextButton = document.getElementById("next-button");
+      const skipButton = document.getElementById("skip-button"); // Skip button
+
+      let messageIndex = 0;
+      let typingInterval;
+
+      function displayMessage(message) {
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add("message");
+
+        const userImage = document.createElement("img");
+        userImage.src =
+          message.user === "Tortured Drugstore"
+            ? "https://s3.amazonaws.com/shecodesio-production/uploads/files/000/152/998/original/Screenshot_2024-12-17_at_00.28.21.png?1734396392"
+            : "https://i.pinimg.com/736x/30/db/72/30db7259d870f7f8093c968bb401ec6b.jpg";
+        messageDiv.appendChild(userImage);
+
+        const textDiv = document.createElement("div");
+        textDiv.classList.add("text");
+        textDiv.textContent = message.text;
+        messageDiv.appendChild(textDiv);
+
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+      }
+
+      function simulateTyping() {
+        const typingIndicator = document.createElement("div");
+        typingIndicator.classList.add("typing-indicator");
+        typingIndicator.textContent = "...";
+        chatBox.appendChild(typingIndicator);
+        chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+
+        typingInterval = setTimeout(() => {
+          chatBox.removeChild(typingIndicator);
+          if (messageIndex < messages.length) {
+            displayMessage(messages[messageIndex]);
+            messageIndex++;
+            setTimeout(simulateTyping, 2000); // Wait 2 seconds before typing the next message
+          } else {
+            endMessage.classList.remove("hidden"); // Show end message options
+          }
+        }, 5000); // Show typing indicator for 5 seconds
+      }
+
+      // Start the simulation
+      simulateTyping();
+
+      // Skip typing functionality
+      skipButton.addEventListener("click", () => {
+        clearTimeout(typingInterval); // Stop the typing simulation
+        chatBox.innerHTML = ""; // Clear the chat box
+        messages.forEach(displayMessage); // Display all messages immediately
+        endMessage.classList.remove("hidden"); // Show end message options
+      });
+
+      // Repeat button functionality
+      document.getElementById("repeat-button").addEventListener("click", () => {
+        location.reload(); // Reload the page
+      });
+
+      // Move on button functionality
+      document
+        .getElementById("move-on-button")
+        .addEventListener("click", () => {
+          endMessage.classList.add("hidden"); // Hide end message options
+          accuracyPrompt.classList.remove("hidden"); // Show accuracy prompt
+        });
+
+      // Yes button functionality
+      document.getElementById("yes-button").addEventListener("click", () => {
+        finalText.textContent =
+          "YAYYY. Hope you enjoyed that, but I have some more. Press 'here'.";
+        nextButton.classList.remove("hidden");
+        finalMessage.classList.remove("hidden"); // Show final message section
+      });
+
+      // No button functionality
+      document.getElementById("no-button").addEventListener("click", () => {
+        finalText.textContent =
+          "STFU IT IS. Hope you enjoyed that, but I have some more. Press 'here'.";
+        nextButton.classList.remove("hidden");
+        finalMessage.classList.remove("hidden"); // Show final message section
+      });
+
+      // Next button functionality
+      nextButton.addEventListener("click", () => {
+        finalText.textContent =
+          "Hope you enjoyed that, but I have some more. Press 'here'.";
+        nextButton.classList.add("hidden");
+        const link = document.createElement("a");
+        link.href = "https://nourrlo.github.io/surprise/yuh.html"; // Updated link
+        link.textContent = "here";
+        link.target = "_blank"; // Open link in a new tab
+        finalMessage.appendChild(link);
+      });
+
+      // Send button functionality (optional)
+      sendButton.addEventListener("click", () => {
+        const text = messageInput.value;
+        if (text) {
+          displayMessage({ user: "You", text }); // Display user's message
+          messageInput.value = "";
+        }
+      });
+    </script>
+  </body>
+</html>
